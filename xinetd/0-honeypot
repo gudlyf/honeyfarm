@@ -1,0 +1,16 @@
+# Container launcher for an SSH honeypot
+service 0-honeypot
+{
+        disable         = no
+	type		= UNLISTED
+        instances       = UNLIMITED
+        server          = /usr/bin/diff
+        socket_type     = stream
+        protocol        = tcp
+        port            = 22
+        user            = root
+        wait            = no
+        log_type        = SYSLOG authpriv info
+        log_on_success  = HOST PID
+        log_on_failure  = HOST
+}
