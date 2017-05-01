@@ -1,0 +1,16 @@
+FROM ubuntu:16.04
+MAINTAINER Keith McDuffee <keith@realistek.com>
+
+RUN apt-get update && apt-get install -y \
+    iptables \
+    openssh-server && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN mkdir /var/run/sshd
+RUN echo root:root | chpasswd
+RUN sed -i 's/^PermitRootLogin .*/PermitRootLogin yes/g' /etc/ssh/sshd_config
+
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]

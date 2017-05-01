@@ -8,6 +8,8 @@ cp -f $DOCKER_CERT_PATH/ca.pem ./keys
 cp -f $DOCKER_CERT_PATH/server-key.pem ./keys/key.pem
 cp -f $DOCKER_CERT_PATH/server.pem ./keys/cert.pem
 
-echo "Building container..."
+echo "Building containers..."
 
-docker build --tag gudlyf/honeyfarm .
+docker build -f ./Dockerfile-entrypoint --tag honeyfarm/entrypoint .
+docker build -f ./Dockerfile-ssh --tag honeyfarm/ssh .
+#docker build -f ./Dockerfile-mysql --tag honeyfarm/mysql .
