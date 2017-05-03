@@ -2,15 +2,9 @@
 
 # V1.1
 
-EXT_IFACE=eth0
-MEM_LIMIT=128M
-SERVICE=3306
+SERVICE_IN=3366
+SERVICE_OUT=3306
 SERVICE_NAME=mysql
-
-QUOTA_IN=5242880
-QUOTA_OUT=1310720
-
-CPUSET_CPUS=1
 
 #READ_ONLY="--read-only"
 
@@ -21,18 +15,20 @@ CPUSET_CPUS=1
     if ! /usr/bin/docker inspect "${CNM}" &> /dev/null; then
 	# create new container
 	SVR_HOSTNAME=live-db-$(( ( RANDOM % 10 )  + 1 ))
-	CID=$(/usr/bin/docker run -h ${SVR_HOSTNAME} ${READ_ONLY} -d --name ${CNM} -e "MYSQL_ROOT_PASSWORD=my-secret-pw" -m ${MEM_LIMIT} -d -i mysql:latest)
+	CID=$(/usr/bin/docker run -h ${SVR_HOSTNAME} ${READ_ONLY} -d --name ${CNM} -e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p ${SERVICE_IN}:${SERVICE_OUT} -d -i mysql:latest)
 	CIP=$(/usr/bin/docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID})
+	CIP="127.0.0.1"
     else
 	# start container if exited and grab the cid
         /usr/bin/docker start "${CNM}" &> /dev/null
         CID=$(/usr/bin/docker inspect --format '{{ .Id }}' "${CNM}")
 	CIP=$(/usr/bin/docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID})
+	CIP="127.0.0.1"
     fi
 } &> /dev/null
 
 # forward traffic to the container
-/usr/bin/socat -T300 stdin tcp:${CIP}:${SERVICE},retry=10
+/usr/bin/socat -T300 stdin tcp:${CIP}:${SERVICE_IN},retry=10
 
 # Destroy this container once they're disconnected or idle
 /usr/bin/docker kill ${CID}

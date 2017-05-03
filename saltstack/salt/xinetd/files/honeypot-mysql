@@ -1,12 +1,13 @@
-service honeypot-ssh
+# Container launcher for honeypot
+service honeypot-mysql
 {
         disable         = no
 	type		= UNLISTED
         instances       = UNLIMITED
-        server          = /usr/local/bin/honeypot-ssh
+        server          = /usr/local/bin/honeypot-mysql.sh
         socket_type     = stream
         protocol        = tcp
-        port            = 22
+        port            = 3306
         user            = root
         wait            = no
         log_type        = SYSLOG authpriv info
