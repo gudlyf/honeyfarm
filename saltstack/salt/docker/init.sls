@@ -8,12 +8,12 @@ docker:
 
 docker_build_ssh:
   cmd.run:
-    - name: 'docker build --tag honeyfarm/ssh - < /vagrant/Dockerfile-ssh'
+    - name: 'docker build --tag honeyfarm/ssh - < /vagrant/dockerfiles/Dockerfile-ssh'
     - require:
       - service: docker
 
 docker_build_mysql:
   cmd.run:
-    - name: 'docker build --tag honeyfarm/mysql - < /vagrant/Dockerfile-mysql'
+    - name: 'docker build --tag honeyfarm/mysql - < /vagrant/dockerfiles/Dockerfile-mysql'
     - require:
       - service: docker

@@ -4,25 +4,23 @@
 
 SERVICE_IN=2223
 SERVICE_OUT=22
+SERVICE_NAME="ssh"
+CIP="127.0.0.1"
 
 READ_ONLY="--read-only"
 
 {
-    CNM="honeypot-ssh-${REMOTE_HOST}"
+    CNM="honeypot-${SERVICE_NAME}-${REMOTE_HOST}"
 
     # check if the container exists
     if ! /usr/bin/docker inspect "${CNM}" &> /dev/null; then
 	# create new container
 	SVR_HOSTNAME=live-svr-$(( ( RANDOM % 10 )  + 1 ))
-	CID=$(/usr/bin/docker run -h ${SVR_HOSTNAME} ${READ_ONLY} -d --name ${CNM} -p ${SERVICE_IN}:${SERVICE_OUT} -d -i honeyfarm/ssh)
-	CIP=$(/usr/bin/docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID})
-	CIP="127.0.0.1"
+	CID=$(/usr/bin/docker run -i -d -h "${SVR_HOSTNAME}" ${READ_ONLY} --name "${CNM}" -p ${SERVICE_IN}:${SERVICE_OUT} honeyfarm/${SERVICE_NAME})
     else
 	# start container if exited and grab the cid
         /usr/bin/docker start "${CNM}" &> /dev/null
         CID=$(/usr/bin/docker inspect --format '{{ .Id }}' "${CNM}")
-	CIP=$(/usr/bin/docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID})
-	CIP="127.0.0.1"
     fi
 } &> /dev/null
 

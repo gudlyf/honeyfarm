@@ -5,6 +5,7 @@
 SERVICE_IN=3366
 SERVICE_OUT=3306
 SERVICE_NAME=mysql
+CIP="127.0.0.1"
 
 #READ_ONLY="--read-only"
 
@@ -15,15 +16,11 @@ SERVICE_NAME=mysql
     if ! /usr/bin/docker inspect "${CNM}" &> /dev/null; then
 	# create new container
 	SVR_HOSTNAME=live-db-$(( ( RANDOM % 10 )  + 1 ))
-	CID=$(/usr/bin/docker run -h ${SVR_HOSTNAME} ${READ_ONLY} -d --name ${CNM} -e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p ${SERVICE_IN}:${SERVICE_OUT} -d -i mysql:latest)
-	CIP=$(/usr/bin/docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID})
-	CIP="127.0.0.1"
+	CID=$(/usr/bin/docker run -i -d -h "${SVR_HOSTNAME}" ${READ_ONLY} --name "${CNM}" -e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p ${SERVICE_IN}:${SERVICE_OUT} mysql:latest)
     else
 	# start container if exited and grab the cid
         /usr/bin/docker start "${CNM}" &> /dev/null
         CID=$(/usr/bin/docker inspect --format '{{ .Id }}' "${CNM}")
-	CIP=$(/usr/bin/docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID})
-	CIP="127.0.0.1"
     fi
 } &> /dev/null
 
