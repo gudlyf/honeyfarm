@@ -10,7 +10,10 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir /var/run/sshd
 RUN echo root:root | chpasswd
 RUN sed -i 's/^PermitRootLogin .*/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN echo "script -aq /var/log/script/script.log" >> /root/.profile
 
 EXPOSE 22
+
+VOLUME ["/var/log/script"]
 
 CMD ["/usr/sbin/sshd", "-D"]
